@@ -1,0 +1,9 @@
+**/bin/
+**/obj/
+App/
+*.user
+.env*
+*.log
+profiles.json
+app-path.txt
+App-Framework/

@@ -1,0 +1,11 @@
+<Window x:Class="CodexProfiles.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Codex Profiles" Width="820" Height="590" MinWidth="650" MinHeight="450" Background="#EFF3F8">
+<Window.Resources><Style TargetType="Button"><Setter Property="Padding" Value="16,9"/><Setter Property="Margin" Value="4"/><Setter Property="Background" Value="#DFE9F7"/><Setter Property="BorderThickness" Value="0"/></Style></Window.Resources>
+<DockPanel Margin="28">
+<StackPanel DockPanel.Dock="Top"><TextBlock Text="Codex Profiles" FontSize="30" FontWeight="SemiBold" Foreground="#183350"/><TextBlock Text="Chọn tài khoản, mở không gian làm việc." Margin="0,6,0,20" Foreground="#52657A"/>
+<DockPanel><Button DockPanel.Dock="Right" Content="Thêm profile" Click="Add"/><TextBox x:Name="ProfileName" Padding="10" VerticalContentAlignment="Center" ToolTip="Tên profile mới"/></DockPanel></StackPanel>
+<StackPanel DockPanel.Dock="Bottom" Margin="0,16,0,0">
+<TextBlock x:Name="Status" Text="Giữ Ctrl để chọn nhiều profile. Mỗi profile mới cần đăng nhập lần đầu." TextWrapping="Wrap" Foreground="#52657A" Margin="0,0,0,10"/>
+<WrapPanel><Button Content="Mở profile đã chọn" Click="Launch"/><Button Content="Mở thư mục dữ liệu" Click="OpenData"/><Button Content="Xóa khỏi danh sách" Click="Remove"/></WrapPanel>
+<TextBlock Text="Dữ liệu đăng nhập giữ riêng trên máy, không đưa lên GitHub." FontSize="12" Foreground="#52657A" Margin="4,10,0,0"/></StackPanel>
+<ListBox x:Name="Profiles" SelectionMode="Extended" Margin="0,16,0,0" BorderThickness="0" Background="White" DisplayMemberPath="Name" FontSize="18" Padding="10"/>
+</DockPanel></Window>
