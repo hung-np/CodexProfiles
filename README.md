@@ -43,6 +43,60 @@ There is no built-in export, sync or automatic backup.
 Close the launcher and Codex before making a private encrypted backup of the data directory. Do not store it in GitHub.
 On a new PC, install Codex, extract the launcher, recreate profiles and sign in again. Copying tokens or machine-bound state is not a reliable migration method. Back up external projects separately.
 
+## Run after cloning from GitHub
+
+Cloning downloads the source code. The generated App folder and EXE are intentionally excluded from Git, so they will not appear after cloning.
+
+### Prepare the computer
+1. Install the [.NET 10 SDK for Windows](https://dotnet.microsoft.com/en-us/download/dotnet/10.0). Select **SDK**, not just Runtime, and choose the architecture matching your computer. The commands below build for Windows x64.
+2. Install the official Codex desktop application and confirm it opens from Start.
+3. If PowerShell was open during SDK installation, close it and open a new window.
+4. Check the SDK:
+~~~powershell
+dotnet --list-sdks
+~~~
+A 10.x SDK should be listed.
+
+### Option A: Open PowerShell in the repository root
+The repository root contains README.md and the src folder. In File Explorer, open that folder, click the address bar, type powershell and press Enter.
+
+Run:
+~~~powershell
+dotnet run --project .\src\CodexProfiles.csproj
+~~~
+
+To create a reusable application folder:
+~~~powershell
+dotnet publish .\src\CodexProfiles.csproj -c Release -r win-x64 --self-contained true -o .\App -p:PublishSingleFile=true
+~~~
+
+Open App in File Explorer and double-click CodexProfiles.exe. This self-contained output includes the runtime. Keep all output files together.
+
+### Option B: You are already inside src
+If File Explorer shows App.xaml, MainWindow.xaml and CodexProfiles.csproj, you are inside src. Open PowerShell there using the address-bar method above.
+
+Run:
+~~~powershell
+dotnet run --project .\CodexProfiles.csproj
+~~~
+
+Or build the reusable application:
+~~~powershell
+dotnet publish .\CodexProfiles.csproj -c Release -r win-x64 --self-contained true -o ..\App -p:PublishSingleFile=true
+~~~
+
+Go up one folder, open App, then double-click CodexProfiles.exe.
+
+### First launch and future updates
+- The first build requires internet access to restore dependencies.
+- Create a profile, select it, launch Codex and sign in inside that profile's window.
+- On another computer, create profiles and sign in again; cloning the code does not transfer account data.
+- After pulling source updates, close Codex Profiles and run the publish command again to update App. Closing the launcher does not stop your Codex profile sessions.
+- If dotnet is not recognized, reopen PowerShell and check that the SDK was installed.
+- If the project file cannot be found, use the command matching your current folder: repository root or src.
+- Close the launcher before publishing over its files if the build reports that output files are in use.
+- No ZIP is created by these commands. You can archive App yourself when needed.
+
 ## Build
 Install the [.NET 10 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) on Windows.
 Run PowerShell from the repository root:
