@@ -1,26 +1,471 @@
-<Window x:Class="CodexProfiles.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Codex Profiles — v0.6" Width="920" Height="680" MinWidth="820" MinHeight="540" Background="#F3F5FA" FontFamily="Segoe UI" FontSize="14">
-<Window.Resources>
-<SolidColorBrush x:Key="Ink" Color="#182D46"/><SolidColorBrush x:Key="Accent" Color="#4159D1"/><SolidColorBrush x:Key="Danger" Color="#A52A39"/>
-<Style TargetType="Button"><Setter Property="Padding" Value="18,12"/><Setter Property="Margin" Value="0,0,10,0"/><Setter Property="Background" Value="#E9EDF7"/><Setter Property="Foreground" Value="{StaticResource Ink}"/><Setter Property="BorderThickness" Value="0"/><Setter Property="Cursor" Value="Hand"/><Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button"><Border x:Name="Surface" Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border><ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Surface" Property="Opacity" Value="0.85"/></Trigger><Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Surface" Property="BorderBrush" Value="#182D46"/><Setter TargetName="Surface" Property="BorderThickness" Value="2"/></Trigger><Trigger Property="IsEnabled" Value="False"><Setter TargetName="Surface" Property="Opacity" Value="0.5"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Setter.Value></Setter></Style>
-<Style TargetType="ListBoxItem"><Setter Property="Margin" Value="0,0,0,10"/><Setter Property="HorizontalContentAlignment" Value="Stretch"/><Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ListBoxItem"><Border x:Name="Card" Padding="18" CornerRadius="10" BorderThickness="2" BorderBrush="#E1E5EF" Background="White"><ContentPresenter/></Border><ControlTemplate.Triggers><Trigger Property="IsSelected" Value="True"><Setter TargetName="Card" Property="Background" Value="#EDF0FF"/><Setter TargetName="Card" Property="BorderBrush" Value="{StaticResource Accent}"/></Trigger><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Card" Property="BorderBrush" Value="#8995D9"/></Trigger><Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Card" Property="BorderBrush" Value="{StaticResource Ink}"/></Trigger></ControlTemplate.Triggers></ControlTemplate></Setter.Value></Setter></Style>
-</Window.Resources>
-<Grid>
-<Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
-<Border Background="#182D46" Padding="30,24">
-<Grid><StackPanel><TextBlock Text="CODEX / PROFILES" Foreground="#BBC9E5" FontSize="12" FontWeight="SemiBold"/><TextBlock Text="Tài khoản riêng. Chuyển đổi dễ dàng." Foreground="White" FontSize="27" FontWeight="SemiBold" Margin="0,8,0,0"/></StackPanel><TextBlock Text="v0.6" Foreground="#BBC9E5" HorizontalAlignment="Right" VerticalAlignment="Top"/></Grid>
-</Border>
-<Grid Grid.Row="1" Margin="30,24"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-<Border Background="White" CornerRadius="12" Padding="20">
-<StackPanel><Label Content="Tên profile mới" Target="{Binding ElementName=ProfileName}" Foreground="{StaticResource Ink}" FontWeight="SemiBold" Padding="0,0,0,8"/><DockPanel><Button DockPanel.Dock="Right" Content="+ Thêm profile" Click="Add" Margin="12,0,0,0" Background="{StaticResource Accent}" Foreground="White"/><TextBox x:Name="ProfileName" Padding="12,9" VerticalContentAlignment="Center" MaxLength="80" BorderBrush="#CCD8E5" AutomationProperties.Name="Tên profile mới"/></DockPanel></StackPanel>
-</Border>
-<Grid Grid.Row="1" Margin="0,22,0,12"><TextBlock Text="PROFILE CỦA BẠN" Foreground="{StaticResource Ink}" FontWeight="SemiBold" FontSize="12"/><TextBlock Text="Ctrl + click để chọn nhiều" Foreground="#53667B" FontSize="12" HorizontalAlignment="Right"/></Grid>
-<Grid Grid.Row="2">
-<TextBlock Text="Chưa có profile. Thêm tên ở phía trên để bắt đầu." Foreground="#53667B" HorizontalAlignment="Center" VerticalAlignment="Center"><TextBlock.Style><Style TargetType="TextBlock"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding ElementName=Profiles,Path=Items.Count}" Value="0"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></TextBlock.Style></TextBlock>
-<ListBox x:Name="Profiles" SelectionMode="Extended" BorderThickness="0" Background="Transparent" AutomationProperties.Name="Danh sách profile" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-<ListBox.ItemTemplate><DataTemplate><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="42"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions><Border Background="#E8EAFE" CornerRadius="8" Width="32" Height="32" VerticalAlignment="Center"><TextBlock Text="C" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" Foreground="#4159D1"/></Border><StackPanel Grid.Column="1"><TextBlock Text="{Binding Name}" FontSize="17" FontWeight="SemiBold" Foreground="#182D46" TextTrimming="CharacterEllipsis"/><Border HorizontalAlignment="Left" CornerRadius="6" Padding="8,4" Margin="0,8,0,0">
-<Border.Style><Style TargetType="Border"><Setter Property="Background" Value="#FFF0D5"/><Style.Triggers><DataTrigger Binding="{Binding State}" Value="● Đã dừng"><Setter Property="Background" Value="#E8EDF4"/></DataTrigger><DataTrigger Binding="{Binding State}" Value="● Không kiểm tra được"><Setter Property="Background" Value="#FBE8EA"/></DataTrigger></Style.Triggers></Style></Border.Style>
-<TextBlock Text="{Binding State}" FontSize="12" FontWeight="SemiBold"><TextBlock.Style><Style TargetType="TextBlock"><Setter Property="Foreground" Value="#825100"/><Style.Triggers><DataTrigger Binding="{Binding State}" Value="● Đã dừng"><Setter Property="Foreground" Value="#42566E"/></DataTrigger><DataTrigger Binding="{Binding State}" Value="● Không kiểm tra được"><Setter Property="Foreground" Value="#A52A39"/></DataTrigger></Style.Triggers></Style></TextBlock.Style></TextBlock>
-</Border></StackPanel></Grid></DataTemplate></ListBox.ItemTemplate>
-</ListBox></Grid>
-<StackPanel Grid.Row="3" Margin="0,18,0,0"><Border Background="#E8EDF6" CornerRadius="8" Padding="12"><TextBlock x:Name="Status" Text="Chọn profile để mở Codex. Profile mới cần đăng nhập lần đầu." TextWrapping="Wrap" Foreground="#182D46" AutomationProperties.LiveSetting="Polite"/></Border><DockPanel Margin="0,16,0,0"><Button DockPanel.Dock="Right" Content="Xóa profile…" Click="Remove" Foreground="{StaticResource Danger}" Background="#F7E6E8" Margin="10,0,0,0"/><WrapPanel><Button Content="Mở Codex đã chọn ↗" Click="Launch" Background="{StaticResource Accent}" Foreground="White"/><Button Content="Dừng đã chọn" Click="StopSelected" Background="#FFF0CF" Foreground="#6A4600"/><Button Content="Thư mục dữ liệu" Click="OpenData"/></WrapPanel></DockPanel></StackPanel>
-</Grid></Grid></Window>
+<Window x:Class="CodexProfiles.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:CodexProfiles"
+        Title="Codex Profiles — v1.01" Width="940" Height="760" MinWidth="820" MinHeight="620"
+        Background="#F3F3F0" FontFamily="Segoe UI" FontSize="14"
+        UseLayoutRounding="True" SnapsToDevicePixels="True">
+
+    <Window.Resources>
+        <!-- ===== Màu sắc ===== -->
+        <SolidColorBrush x:Key="Ink" Color="#17262B"/>
+        <SolidColorBrush x:Key="Accent" Color="#20393E"/>
+        <SolidColorBrush x:Key="Danger" Color="#A52A39"/>
+        <SolidColorBrush x:Key="Muted" Color="#5A6972"/>
+        <SolidColorBrush x:Key="Line" Color="#DADDD8"/>
+
+        <local:InitialConverter x:Key="Initial"/>
+
+        <!-- ===== Nút: kiểu nền, có hover / pressed / focus ===== -->
+        <Style x:Key="BtnBase" TargetType="Button">
+            <Setter Property="Padding" Value="17,11"/>
+            <Setter Property="Margin" Value="0,0,10,0"/>
+            <Setter Property="MinHeight" Value="44"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Foreground" Value="#34494D"/>
+            <Setter Property="Background" Value="#FAFBF8"/>
+            <Setter Property="BorderBrush" Value="#C6CFCA"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid x:Name="Root">
+                            <Border x:Name="Surface" CornerRadius="8" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                                <Border.Effect><DropShadowEffect BlurRadius="8" ShadowDepth="2" Direction="270" Color="#14272A" Opacity="0.09"/></Border.Effect>
+                                <Grid>
+                                    <Border x:Name="Sheen" CornerRadius="7" BorderThickness="0,1,0,0" BorderBrush="#A0FFFFFF" Margin="1"/>
+                                    <ContentPresenter Margin="{TemplateBinding Padding}" HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True"/>
+                                </Grid>
+                            </Border>
+                            <Border x:Name="Hover" CornerRadius="8" Background="#77918B" Opacity="0" IsHitTestVisible="False"/>
+                            <Border x:Name="Focus" Margin="-3" CornerRadius="11" BorderBrush="#927440" BorderThickness="2" Visibility="Collapsed" IsHitTestVisible="False"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Surface" Property="BorderBrush" Value="#927440"/>
+                                <Setter TargetName="Hover" Property="Opacity" Value="0.08"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Hover" Property="Background" Value="#14272A"/>
+                                <Setter TargetName="Hover" Property="Opacity" Value="0.16"/>
+                                <Setter TargetName="Surface" Property="Effect" Value="{x:Null}"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Focus" Property="Visibility" Value="Visible"/></Trigger>
+                            <Trigger Property="IsEnabled" Value="False"><Setter TargetName="Root" Property="Opacity" Value="0.45"/><Setter TargetName="Surface" Property="Effect" Value="{x:Null}"/></Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource BtnBase}">
+            <Setter Property="Background"><Setter.Value><LinearGradientBrush StartPoint="0,0" EndPoint="0,1"><GradientStop Color="#375454" Offset="0"/><GradientStop Color="#172E33" Offset="1"/></LinearGradientBrush></Setter.Value></Setter>
+            <Setter Property="BorderBrush" Value="#60746B"/>
+            <Setter Property="Foreground" Value="#F5E8CA"/>
+            <Setter Property="Padding" Value="22,12"/>
+        </Style>
+        <Style x:Key="SoftButton" TargetType="Button" BasedOn="{StaticResource BtnBase}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="#CDD4D0"/>
+        </Style>
+        <Style x:Key="WarnButton" TargetType="Button" BasedOn="{StaticResource BtnBase}">
+            <Setter Property="Background" Value="#F6F1E6"/>
+            <Setter Property="BorderBrush" Value="#CBBB99"/>
+            <Setter Property="Foreground" Value="#6A5128"/>
+        </Style>
+        <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource BtnBase}">
+            <Setter Property="Background" Value="#FCF8F7"/>
+            <Setter Property="BorderBrush" Value="#DDC8C5"/>
+            <Setter Property="Foreground" Value="#9A3E43"/>
+            <Setter Property="Margin" Value="0"/>
+        </Style>
+        <!-- Language selector shares the application's surface, focus and spacing conventions. -->
+        <Style x:Key="LanguageItem" TargetType="ComboBoxItem">
+            <Setter Property="Foreground" Value="#34494D"/>
+            <Setter Property="Padding" Value="13,10"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Template"><Setter.Value>
+                <ControlTemplate TargetType="ComboBoxItem">
+                    <Border x:Name="ItemSurface" Background="Transparent" CornerRadius="5" Margin="3,2" Padding="{TemplateBinding Padding}">
+                        <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="22"/></Grid.ColumnDefinitions>
+                            <ContentPresenter/>
+                            <TextBlock x:Name="Check" Grid.Column="1" Text="✓" Foreground="#927440" Visibility="Hidden" HorizontalAlignment="Right"/>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True"><Setter TargetName="Check" Property="Visibility" Value="Visible"/><Setter TargetName="ItemSurface" Property="Background" Value="#F1EDE1"/></Trigger>
+                        <Trigger Property="IsHighlighted" Value="True"><Setter TargetName="ItemSurface" Property="Background" Value="#E8EBE7"/></Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value></Setter>
+        </Style>
+        <Style x:Key="LanguageSelector" TargetType="ComboBox">
+            <Setter Property="Foreground" Value="#F5E8CA"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="MinHeight" Value="44"/>
+            <Setter Property="ItemContainerStyle" Value="{StaticResource LanguageItem}"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="Template"><Setter.Value>
+                <ControlTemplate TargetType="ComboBox">
+                    <Grid>
+                        <ToggleButton x:Name="Toggle" Focusable="False" ClickMode="Press"
+                            IsChecked="{Binding IsDropDownOpen,RelativeSource={RelativeSource TemplatedParent},Mode=TwoWay}">
+                            <ToggleButton.Template><ControlTemplate TargetType="ToggleButton">
+                                <Border x:Name="Surface" CornerRadius="8" BorderBrush="#60746B" BorderThickness="1">
+                                    <Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint="0,1"><GradientStop Color="#375454"/><GradientStop Color="#172E33" Offset="1"/></LinearGradientBrush></Border.Background>
+                                    <Grid><Border CornerRadius="7" Margin="1" BorderThickness="0,1,0,0" BorderBrush="#50FFFFFF"/>
+                                        <Path Data="M 0 0 L 4 4 L 8 0" Stroke="#D8C398" StrokeThickness="1.5" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,14,0"/>
+                                    </Grid>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Surface" Property="BorderBrush" Value="#D8C398"/></Trigger>
+                                    <Trigger Property="IsChecked" Value="True"><Setter TargetName="Surface" Property="BorderBrush" Value="#D8C398"/></Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate></ToggleButton.Template>
+                        </ToggleButton>
+                        <ContentPresenter Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" Margin="14,0,36,0" VerticalAlignment="Center" IsHitTestVisible="False"/>
+                        <Border x:Name="FocusRing" Margin="-3" CornerRadius="11" BorderBrush="#D8C398" BorderThickness="2" Visibility="Collapsed" IsHitTestVisible="False"/>
+                        <Popup x:Name="PART_Popup" Placement="Bottom" VerticalOffset="6" AllowsTransparency="True" Focusable="False" IsOpen="{TemplateBinding IsDropDownOpen}">
+                            <Border Background="#FAFBF8" BorderBrush="#CBBB99" BorderThickness="1" CornerRadius="8" Padding="3" MinWidth="{Binding ActualWidth,RelativeSource={RelativeSource TemplatedParent}}">
+                                <ScrollViewer CanContentScroll="True" MaxHeight="180"><ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained"/></ScrollViewer>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True"><Setter TargetName="FocusRing" Property="Visibility" Value="Visible"/></Trigger>
+                        <Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value="0.45"/></Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value></Setter>
+        </Style>
+        <!-- ===== Ô nhập ===== -->
+        <Style x:Key="Input" TargetType="TextBox">
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="Foreground" Value="{StaticResource Ink}"/>
+            <Setter Property="Background" Value="#F9FAF7"/>
+            <Setter Property="BorderBrush" Value="#CDD5D9"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="Box" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="10">
+                            <ScrollViewer x:Name="PART_ContentHost" Padding="{TemplateBinding Padding}"
+                                          VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Box" Property="BorderBrush" Value="#927440"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="Box" Property="BorderBrush" Value="{StaticResource Accent}"/>
+                                <Setter TargetName="Box" Property="Background" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ===== Thẻ profile ===== -->
+        <Style TargetType="ListBoxItem">
+            <Setter Property="Margin" Value="2,2,2,10"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="Card" Padding="18,12" CornerRadius="9" BorderThickness="1"
+                                BorderBrush="#DADDD8" Background="White">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="10" ShadowDepth="1" Direction="270" Color="#17262B" Opacity="0.04"/>
+                            </Border.Effect>
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Card" Property="BorderBrush" Value="#927440"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Card" Property="Background" Value="#F1EDE1"/>
+                                <Setter TargetName="Card" Property="BorderBrush" Value="#927440"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="Card" Property="BorderBrush" Value="{StaticResource Ink}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ===== Huy hiệu trạng thái (mặc định = đang chạy, màu xanh lá) ===== -->
+        <Style x:Key="BadgeBox" TargetType="Border">
+            <Setter Property="Background" Value="#DDF5E6"/>
+            <Setter Property="CornerRadius" Value="999"/>
+            <Setter Property="Padding" Value="11,4"/>
+            <Setter Property="Margin" Value="0,8,0,0"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding StatusKind}" Value="Stopped">
+                    <Setter Property="Background" Value="#E8EDF4"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding StatusKind}" Value="Checking">
+                    <Setter Property="Background" Value="#FFF0D5"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding StatusKind}" Value="Stopping">
+                    <Setter Property="Background" Value="#FFF0D5"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding StatusKind}" Value="Unknown">
+                    <Setter Property="Background" Value="#FBE8EA"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding StatusKind}" Value="Unknown">
+                    <Setter Property="Background" Value="#FBE8EA"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="BadgeText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#14673A"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding StatusKind}" Value="Stopped">
+                    <Setter Property="Foreground" Value="#42566E"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding StatusKind}" Value="Checking">
+                    <Setter Property="Foreground" Value="#825100"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding StatusKind}" Value="Stopping">
+                    <Setter Property="Foreground" Value="#825100"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding StatusKind}" Value="Unknown">
+                    <Setter Property="Foreground" Value="#A52A39"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding StatusKind}" Value="Unknown">
+                    <Setter Property="Foreground" Value="#A52A39"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- ===== Vòng tròn chọn (hiện dấu tick khi thẻ được chọn) ===== -->
+        <Style x:Key="CheckCircle" TargetType="Border">
+            <Setter Property="Width" Value="24"/>
+            <Setter Property="Height" Value="24"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BorderBrush" Value="#C8CED1"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
+                    <Setter Property="Background" Value="{StaticResource Accent}"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="CheckGlyph" TargetType="TextBlock">
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- ===== Header ===== -->
+        <Border Padding="28,18" ClipToBounds="True">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#17262B" Offset="0"/>
+                    <GradientStop Color="#233B3E" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+            <Grid>
+                <Border Width="3" Background="#B99D68" HorizontalAlignment="Left" Margin="-14,2,0,2" CornerRadius="1"/>
+                <StackPanel>
+                    <TextBlock Text="CODEX  /  PROFILE COLLECTION" Foreground="#B8C3BE" FontSize="12" FontWeight="SemiBold"/>
+                    <TextBlock TextWrapping="Wrap" MaxWidth="650" HorizontalAlignment="Left" Text="{DynamicResource Loc_Không gian làm việc của bạn.}" Foreground="White" FontSize="22"
+                               FontWeight="SemiBold" Margin="0,8,0,0"/>
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top">
+                    <TextBlock Text="v1.01" Foreground="#D8C398" HorizontalAlignment="Right" FontSize="12" Margin="0,0,0,8"/>
+                    <ComboBox x:Name="LanguageSelect" Width="144" Style="{StaticResource LanguageSelector}" SelectionChanged="ChangeLanguage" AutomationProperties.Name="Language / Ngôn ngữ" Padding="6,3">
+                        <ComboBoxItem Content="English"/>
+                        <ComboBoxItem Content="Tiếng Việt"/>
+                    </ComboBox>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ===== Nội dung ===== -->
+        <Grid Grid.Row="1" Margin="24,16,24,16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Thêm profile -->
+            <Border Background="White" CornerRadius="10" Padding="14,10" BorderBrush="{StaticResource Line}" BorderThickness="1">
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Click="Add" Content="{DynamicResource Loc_+ Thêm profile}" Style="{StaticResource SoftButton}" Margin="10,0,0,0"/>
+                    <Label DockPanel.Dock="Left" Content="{DynamicResource Loc_Profile mới}" Target="{Binding ElementName=ProfileName}" VerticalAlignment="Center" Padding="0,0,14,0" Foreground="{StaticResource Muted}"/>
+                    <TextBox x:Name="ProfileName" Style="{StaticResource Input}" MaxLength="80" AutomationProperties.Name="{DynamicResource Loc_Tên profile mới}" ToolTip="{DynamicResource Loc_Nhập tên profile mới}"/>
+                </DockPanel>
+            </Border>
+            <!-- Tiêu đề danh sách -->
+            <Grid Grid.Row="1" Margin="4,14,4,10">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{DynamicResource Loc_PROFILE CỦA BẠN}" Foreground="{StaticResource Ink}" FontWeight="SemiBold" FontSize="12"/>
+                    <Border Background="#EAE4D5" CornerRadius="7" Padding="8,1" Margin="10,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Items.Count, ElementName=Profiles}" Foreground="{StaticResource Accent}"
+                                   FontSize="11" FontWeight="Bold"/>
+                    </Border>
+                </StackPanel>
+                <TextBlock Text="{DynamicResource Loc_Ctrl + click để chọn nhiều}" Foreground="{StaticResource Muted}" FontSize="12"
+                           HorizontalAlignment="Right"/>
+            </Grid>
+
+            <!-- Danh sách -->
+            <Grid Grid.Row="2">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Items.Count, ElementName=Profiles}" Value="0">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <Border Width="64" Height="64" CornerRadius="18" Background="#EAE4D5" HorizontalAlignment="Center">
+                        <TextBlock Text="&#xE77B;" FontFamily="Segoe MDL2 Assets" FontSize="28"
+                                   Foreground="{StaticResource Accent}" HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="{DynamicResource Loc_Chưa có profile}" FontSize="17" FontWeight="SemiBold"
+                               Foreground="{StaticResource Ink}" HorizontalAlignment="Center" Margin="0,14,0,0"/>
+                    <TextBlock Text="{DynamicResource Loc_Thêm tên ở phía trên để bắt đầu.}" Foreground="{StaticResource Muted}"
+                               HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                </StackPanel>
+
+                <ListBox x:Name="Profiles" SelectionMode="Extended" BorderThickness="0" Background="Transparent"
+                         AutomationProperties.Name="{DynamicResource Loc_Danh sách profile}"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Border Width="46" Height="46" CornerRadius="10" Margin="0,0,16,0" VerticalAlignment="Center">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#3A5352" Offset="0"/>
+                                            <GradientStop Color="#17262B" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <TextBlock Text="{Binding Name, Converter={StaticResource Initial}}" Foreground="White"
+                                               FontSize="19" FontWeight="SemiBold" HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Name}" FontSize="17" FontWeight="SemiBold"
+                                               Foreground="#17262B" TextTrimming="CharacterEllipsis"/>
+                                    <Border Style="{StaticResource BadgeBox}">
+                                        <TextBlock Text="{Binding State}" Style="{StaticResource BadgeText}"/>
+                                    </Border>
+                                </StackPanel>
+
+                                <Border Grid.Column="2" Style="{StaticResource CheckCircle}" Margin="12,0,0,0">
+                                    <TextBlock Text="&#xE73E;" FontFamily="Segoe MDL2 Assets" FontSize="12"
+                                               Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                               Style="{StaticResource CheckGlyph}"/>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+
+            <!-- Trạng thái + thao tác -->
+            <StackPanel Grid.Row="3" Margin="0,10,0,0">
+                <Border Background="White" BorderBrush="#DADDD8" BorderThickness="1" CornerRadius="9" Padding="10,8">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Width="28" Height="28" CornerRadius="10" Background="#EAE4D5" Margin="0,0,12,0"
+                                VerticalAlignment="Top">
+                            <TextBlock Text="&#xE946;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                       Foreground="{StaticResource Accent}" HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock x:Name="Status" Grid.Column="1" VerticalAlignment="Center" TextWrapping="Wrap"
+                                   Foreground="{StaticResource Ink}"
+                                   Text="{DynamicResource Loc_Chọn profile để mở Codex. Profile mới cần đăng nhập lần đầu.}"
+                                   AutomationProperties.LiveSetting="Polite"/>
+                    </Grid>
+                </Border>
+
+                <DockPanel Margin="0,10,0,0">
+                    <Button DockPanel.Dock="Right" Click="Remove" Style="{StaticResource DangerButton}"
+                            AutomationProperties.Name="{DynamicResource Loc_Xóa profile}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="13"
+                                       VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <TextBlock Text="{DynamicResource Loc_Xóa profile…}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <WrapPanel>
+                        <Button Click="Launch" Style="{StaticResource PrimaryButton}"
+                                AutomationProperties.Name="{DynamicResource Loc_Mở Codex đã chọn}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE768;" FontFamily="Segoe MDL2 Assets" FontSize="13"
+                                           VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <TextBlock Text="{DynamicResource Loc_Mở Codex đã chọn}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Click="StopSelected" Style="{StaticResource WarnButton}"
+                                AutomationProperties.Name="{DynamicResource Loc_Dừng đã chọn}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE71A;" FontFamily="Segoe MDL2 Assets" FontSize="13"
+                                           VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <TextBlock Text="{DynamicResource Loc_Dừng đã chọn}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Click="OpenData" Style="{StaticResource SoftButton}"
+                                AutomationProperties.Name="{DynamicResource Loc_Thư mục dữ liệu}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE838;" FontFamily="Segoe MDL2 Assets" FontSize="13"
+                                           VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <TextBlock Text="{DynamicResource Loc_Thư mục dữ liệu}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </WrapPanel>
+                </DockPanel>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

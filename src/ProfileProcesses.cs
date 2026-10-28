@@ -26,16 +26,16 @@ public static class ProfileProcesses {
  start.ArgumentList.Add("-NoProfile");start.ArgumentList.Add("-NonInteractive");start.ArgumentList.Add("-Command");
  // All parent IDs are needed to identify backend descendants. No command lines are logged.
  start.ArgumentList.Add("$ErrorActionPreference='Stop'; $rows=@(Get-CimInstance Win32_Process | Where-Object { $_.CreationDate -and $_.ProcessId -gt 0 } | ForEach-Object { [pscustomobject]@{ProcessId=[int]$_.ProcessId;ParentProcessId=[int]$_.ParentProcessId;CommandLine=$_.CommandLine;CreationDate=$_.CreationDate.ToUniversalTime().ToString('o')} }); ConvertTo-Json -InputObject $rows -Compress");
- using var process=Process.Start(start)??throw new IOException("Không đọc được tiến trình Windows.");
+ using var process=Process.Start(start)??throw new IOException(AppLanguage.T("Không đọc được tiến trình Windows."));
  var output=process.StandardOutput.ReadToEndAsync();var error=process.StandardError.ReadToEndAsync();
  using var timeout=new CancellationTokenSource(TimeSpan.FromSeconds(15));
- try{await process.WaitForExitAsync(timeout.Token);}catch(OperationCanceledException){try{process.Kill(true);}catch{}throw new IOException("Kiểm tra tiến trình quá thời gian.");}
+ try{await process.WaitForExitAsync(timeout.Token);}catch(OperationCanceledException){try{process.Kill(true);}catch{}throw new IOException(AppLanguage.T("Kiểm tra tiến trình quá thời gian."));}
  var json=await output;await error;
- if(process.ExitCode!=0)throw new IOException("Windows không cho kiểm tra tiến trình.");
- var rows=JsonSerializer.Deserialize<List<ProcessRow>>(json)??throw new IOException("Không đọc được trạng thái.");
+ if(process.ExitCode!=0)throw new IOException(AppLanguage.T("Windows không cho kiểm tra tiến trình."));
+ var rows=JsonSerializer.Deserialize<List<ProcessRow>>(json)??throw new IOException(AppLanguage.T("Không đọc được trạng thái."));
  // A missing command line for a Codex process cannot prove that a profile stopped.
  foreach(var row in rows)if(row.CommandLine is null){
- try{using var p=Process.GetProcessById(row.ProcessId);if(p.ProcessName.Equals("ChatGPT",StringComparison.OrdinalIgnoreCase)||p.ProcessName.Equals("Codex",StringComparison.OrdinalIgnoreCase))throw new IOException("Không kiểm tra được một tiến trình Codex.");}catch(ArgumentException){}
+ try{using var p=Process.GetProcessById(row.ProcessId);if(p.ProcessName.Equals("ChatGPT",StringComparison.OrdinalIgnoreCase)||p.ProcessName.Equals("Codex",StringComparison.OrdinalIgnoreCase))throw new IOException(AppLanguage.T("Không kiểm tra được một tiến trình Codex."));}catch(ArgumentException){}
  }
  return rows;
  }
@@ -54,18 +54,16 @@ public static class ProfileProcesses {
  foreach(var row in owned.AsEnumerable().Reverse()){
  try{
  var p=Process.GetProcessById(row.ProcessId);
- if(Math.Abs((p.StartTime.ToUniversalTime()-DateTime.Parse(row.CreationDate).ToUniversalTime()).TotalSeconds)>1){p.Dispose();throw new IOException("Tiến trình đã thay đổi; hãy thử lại.");}
+ if(Math.Abs((p.StartTime.ToUniversalTime()-DateTime.Parse(row.CreationDate).ToUniversalTime()).TotalSeconds)>1){p.Dispose();throw new IOException(AppLanguage.T("Tiến trình đã thay đổi; hãy thử lại."));}
  handles.Add(p);
  }catch(ArgumentException){}
  }
  foreach(var p in handles)try{if(!p.HasExited)p.Kill(false);}catch(InvalidOperationException){}
  foreach(var p in handles)try{using var timeout=new CancellationTokenSource(TimeSpan.FromSeconds(5));await p.WaitForExitAsync(timeout.Token);}catch(OperationCanceledException){}
- if(handles.Any(p=>!p.HasExited))throw new IOException("Một tiến trình của profile chưa dừng hẳn.");
+ if(handles.Any(p=>!p.HasExited))throw new IOException(AppLanguage.T("Một tiến trình của profile chưa dừng hẳn."));
 }finally{foreach(var p in handles)p.Dispose();}
  }
- if(Owned(await Snapshot(),dataPath).Count!=0)throw new IOException("Profile vẫn còn tiến trình. Hãy thử dừng lại.");
+ if(Owned(await Snapshot(),dataPath).Count!=0)throw new IOException(AppLanguage.T("Profile vẫn còn tiến trình. Hãy thử dừng lại."));
  }
 }
-
-
 

@@ -9,7 +9,10 @@ public class Profile : System.ComponentModel.INotifyPropertyChanged {
  public string Id {get;set;} public string Name {get;set;}
  public Profile(string id,string name){Id=id;Name=name;}
  string state="Đang kiểm tra…";
- [System.Text.Json.Serialization.JsonIgnore] public string State {get=>state;set{state=value;PropertyChanged?.Invoke(this,new(nameof(State)));}}
+ [System.Text.Json.Serialization.JsonIgnore] public string State {get=>AppLanguage.T(state);set{state=value;PropertyChanged?.Invoke(this,new(nameof(State)));PropertyChanged?.Invoke(this,new(nameof(StatusKind)));}}
+ [System.Text.Json.Serialization.JsonIgnore] public string StatusKind =>
+ state.Contains("Đã dừng")?"Stopped":state.Contains("Đang dừng")?"Stopping":state.Contains("Đang chạy")?"Running":state.Contains("kiểm tra…")?"Checking":"Unknown";
+ public void Relocalize(){PropertyChanged?.Invoke(this,new(nameof(State)));}
  public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
 }
 public partial class MainWindow : Window {
@@ -26,50 +29,80 @@ public partial class MainWindow : Window {
  string DataPath(Profile p)=>Path.Combine(root,"profiles",p.Id,"app-data");
  async void StopSelected(object s,RoutedEventArgs e){
  var selected=Profiles.SelectedItems.Cast<Profile>().ToList();
- if(selected.Count==0){Status.Text="Chọn profile cần dừng.";return;}
- if(MessageBox.Show("Dừng các profile đã chọn? Tác vụ đang chạy có thể bị ngắt. Dữ liệu đăng nhập được giữ nguyên.","Dừng profile",MessageBoxButton.OKCancel,MessageBoxImage.Warning)!=MessageBoxResult.OK)return;
+ if(selected.Count==0){Status.Text=AppLanguage.T("Chọn profile cần dừng.");return;}
+ if(!ConfirmAction(AppLanguage.T("Dừng các profile đã chọn? Tác vụ đang chạy có thể bị ngắt. Dữ liệu đăng nhập được giữ nguyên."),AppLanguage.T("Dừng profile")))return;
  refreshTimer.Stop();IsEnabled=false;
  try{
  foreach(var p in selected){p.State="● Đang dừng…";await ProfileProcesses.Stop(DataPath(p));p.State="● Đã dừng";}
- Status.Text="Đã dừng các profile đã chọn. Thông tin đăng nhập vẫn được giữ.";
- }catch(Exception ex){Status.Text="Chưa dừng hoàn tất: "+ex.Message;foreach(var p in selected)p.State="● Cần kiểm tra lại";}
+ Status.Text=AppLanguage.T("Đã dừng các profile đã chọn. Thông tin đăng nhập vẫn được giữ.");
+ }catch(Exception ex){Status.Text=AppLanguage.T("Chưa dừng hoàn tất: ")+ex.Message;foreach(var p in selected)p.State="● Cần kiểm tra lại";}
  finally{IsEnabled=true;await RefreshStates();refreshTimer.Start();}
+ }
+ bool languageReady;
+ void LoadLanguage(){
+ try{var file=Path.Combine(root,"language.txt");if(File.Exists(file))AppLanguage.Code=File.ReadAllText(file).Trim()=="vi"?"vi":"en";}catch{AppLanguage.Code="en";}
+ }
+ void ApplyLanguageResources(){
+ foreach(var pair in AppLanguage.English)Application.Current.Resources["Loc_"+pair.Key]=AppLanguage.T(pair.Key);
+ System.Globalization.CultureInfo.CurrentCulture=System.Globalization.CultureInfo.GetCultureInfo(AppLanguage.Code=="vi"?"vi-VN":"en-US");
+ System.Globalization.CultureInfo.CurrentUICulture=System.Globalization.CultureInfo.CurrentCulture;
+ }
+ void ChangeLanguage(object sender,System.Windows.Controls.SelectionChangedEventArgs e){
+ if(!languageReady)return;
+ var previous=AppLanguage.Code;
+ try{
+ var code=LanguageSelect.SelectedIndex==1?"vi":"en";
+ Directory.CreateDirectory(root);var file=Path.Combine(root,"language.txt");
+ File.WriteAllText(file+".tmp",code);File.Move(file+".tmp",file,true);
+ AppLanguage.Code=code;ApplyLanguageResources();foreach(var p in items)p.Relocalize();
+ Status.Text=AppLanguage.T("Chọn profile để mở Codex. Profile mới cần đăng nhập lần đầu.");
+ }catch{AppLanguage.Code=previous;Status.Text=previous=="vi"?"Không lưu được ngôn ngữ.":"Could not save language preference.";}
  }
  string store=>Path.Combine(root,"profiles.json");
  public MainWindow(){
- InitializeComponent(); Profiles.ItemsSource=items; refreshTimer.Tick+=async (_,_)=>await RefreshStates(); Loaded+=async (_,_)=>{await RefreshStates();refreshTimer.Start();}; Closed+=(_,_)=>refreshTimer.Stop();
+ LoadLanguage(); ApplyLanguageResources(); InitializeComponent(); LanguageSelect.SelectedIndex=AppLanguage.Code=="vi"?1:0; languageReady=true; Profiles.ItemsSource=items; refreshTimer.Tick+=async (_,_)=>await RefreshStates(); Loaded+=async (_,_)=>{await RefreshStates();refreshTimer.Start();}; Closed+=(_,_)=>refreshTimer.Stop();
  try { Directory.CreateDirectory(root); if(File.Exists(store)) foreach(var p in JsonSerializer.Deserialize<List<Profile>>(File.ReadAllText(store))??[]) { if(Guid.TryParseExact(p.Id,"N",out _)) items.Add(p); } }
- catch(Exception e){ Status.Text="Không đọc được danh sách; dữ liệu cũ được giữ lại. "+e.Message; IsEnabled=false; }
+ catch(Exception e){ Status.Text=AppLanguage.T("Không đọc được danh sách; dữ liệu cũ được giữ lại. ")+e.Message; IsEnabled=false; }
  }
  void Save(){ var temp=store+".tmp"; File.WriteAllText(temp,JsonSerializer.Serialize(items)); File.Move(temp,store,true); }
- void Add(object s,RoutedEventArgs e){var name=ProfileName.Text.Trim(); if(name.Length==0)return; if(items.Any(p=>p.Name.Equals(name,StringComparison.OrdinalIgnoreCase))){Status.Text="Tên profile đã tồn tại.";return;} var p=new Profile(Guid.NewGuid().ToString("N"),name);items.Add(p); try{PrepareProfile(p);Save();ProfileName.Clear();Profiles.SelectedItem=p;Status.Text="Đã tạo profile mới. Chọn Mở profile đã chọn để đăng nhập Codex.";}catch(Exception ex){items.Remove(p);Status.Text=ex.Message;}}
+ void Add(object s,RoutedEventArgs e){var name=ProfileName.Text.Trim(); if(name.Length==0)return; if(items.Any(p=>p.Name.Equals(name,StringComparison.OrdinalIgnoreCase))){Status.Text=AppLanguage.T("Tên profile đã tồn tại.");return;} var p=new Profile(Guid.NewGuid().ToString("N"),name);items.Add(p); try{PrepareProfile(p);Save();ProfileName.Clear();Profiles.SelectedItem=p;Status.Text=AppLanguage.T("Đã tạo profile mới. Chọn Mở profile đã chọn để đăng nhập Codex.");}catch(Exception ex){items.Remove(p);Status.Text=ex.Message;}}
+ bool ConfirmAction(string message,string title){
+ var dialog=new Window{Owner=this,Title=title,Width=500,SizeToContent=SizeToContent.Height,WindowStartupLocation=WindowStartupLocation.CenterOwner,ResizeMode=ResizeMode.NoResize,Background=System.Windows.Media.Brushes.White};
+ var panel=new System.Windows.Controls.StackPanel{Margin=new Thickness(24)};
+ panel.Children.Add(new System.Windows.Controls.TextBlock{Text=message,TextWrapping=TextWrapping.Wrap,FontSize=14});
+ var bar=new System.Windows.Controls.StackPanel{Orientation=System.Windows.Controls.Orientation.Horizontal,HorizontalAlignment=HorizontalAlignment.Right,Margin=new Thickness(0,20,0,0)};
+ var cancel=new System.Windows.Controls.Button{Content=AppLanguage.Code=="vi"?"Hủy":"Cancel",IsCancel=true,Padding=new Thickness(18,10,18,10),Margin=new Thickness(0,0,10,0)};
+ var confirm=new System.Windows.Controls.Button{Content=AppLanguage.Code=="vi"?"Tiếp tục":"Continue",Padding=new Thickness(18,10,18,10)};
+ cancel.Click+=(_,_)=>dialog.DialogResult=false;confirm.Click+=(_,_)=>dialog.DialogResult=true;
+ bar.Children.Add(cancel);bar.Children.Add(confirm);panel.Children.Add(bar);dialog.Content=panel;dialog.Loaded+=(_,_)=>cancel.Focus();return dialog.ShowDialog()==true;
+ }
  bool ConfirmDeletion(List<Profile> selected){
- var dialog=new Window{Title="Xóa profile và dữ liệu",Owner=this,Width=510,Height=350,ResizeMode=ResizeMode.NoResize,WindowStartupLocation=WindowStartupLocation.CenterOwner,Background=System.Windows.Media.Brushes.White};
+ var dialog=new Window{Title=AppLanguage.T("Xóa profile và dữ liệu"),Owner=this,Width=510,Height=350,ResizeMode=ResizeMode.NoResize,WindowStartupLocation=WindowStartupLocation.CenterOwner,Background=System.Windows.Media.Brushes.White};
  var panel=new System.Windows.Controls.StackPanel{Margin=new Thickness(28)};
- panel.Children.Add(new System.Windows.Controls.TextBlock{Text="Xóa vĩnh viễn "+selected.Count+" profile?",FontSize=23,FontWeight=FontWeights.SemiBold});
+ panel.Children.Add(new System.Windows.Controls.TextBlock{Text=AppLanguage.T("Xóa vĩnh viễn ")+selected.Count+AppLanguage.T(" profile?"),FontSize=23,FontWeight=FontWeights.SemiBold});
  var summary=new System.Windows.Controls.TextBlock{Text=string.Join(", ",selected.Select(p=>p.Name)),TextWrapping=TextWrapping.Wrap,Margin=new Thickness(0,14,0,14)};
  panel.Children.Add(new System.Windows.Controls.ScrollViewer{Content=summary,MaxHeight=70});
- panel.Children.Add(new System.Windows.Controls.TextBlock{Text="Xóa toàn bộ dữ liệu cục bộ của các profile này: đăng nhập, lịch sử và cấu hình. Không thể hoàn tác. Tài khoản và các profile khác không bị xóa.",TextWrapping=TextWrapping.Wrap});
+ panel.Children.Add(new System.Windows.Controls.TextBlock{Text=AppLanguage.T("Xóa toàn bộ dữ liệu cục bộ của các profile này: đăng nhập, lịch sử và cấu hình. Không thể hoàn tác. Tài khoản và các profile khác không bị xóa."),TextWrapping=TextWrapping.Wrap});
  var buttons=new System.Windows.Controls.StackPanel{Orientation=System.Windows.Controls.Orientation.Horizontal,HorizontalAlignment=HorizontalAlignment.Right,Margin=new Thickness(0,22,0,0)};
- var cancel=new System.Windows.Controls.Button{Content="Giữ lại",IsCancel=true,MinWidth=100,Padding=new Thickness(14,10,14,10),Margin=new Thickness(0,0,10,0)};
- var delete=new System.Windows.Controls.Button{Content="Xóa vĩnh viễn",Background=System.Windows.Media.Brushes.Firebrick,Foreground=System.Windows.Media.Brushes.White,Padding=new Thickness(14,10,14,10)};
+ var cancel=new System.Windows.Controls.Button{Content=AppLanguage.T("Giữ lại"),IsCancel=true,MinWidth=100,Padding=new Thickness(14,10,14,10),Margin=new Thickness(0,0,10,0)};
+ var delete=new System.Windows.Controls.Button{Content=AppLanguage.T("Xóa vĩnh viễn"),Background=System.Windows.Media.Brushes.Firebrick,Foreground=System.Windows.Media.Brushes.White,Padding=new Thickness(14,10,14,10)};
  cancel.Click+=(_,_)=>dialog.DialogResult=false;delete.Click+=(_,_)=>dialog.DialogResult=true;
  buttons.Children.Add(cancel);buttons.Children.Add(delete);panel.Children.Add(buttons);dialog.Content=panel;dialog.Loaded+=(_,_)=>cancel.Focus();
  return dialog.ShowDialog()==true;
  }
  async void Remove(object s,RoutedEventArgs e){
- var chosen=Profiles.SelectedItems.Cast<Profile>().ToList();if(chosen.Count==0){Status.Text="Chọn profile cần xóa.";return;}
+ var chosen=Profiles.SelectedItems.Cast<Profile>().ToList();if(chosen.Count==0){Status.Text=AppLanguage.T("Chọn profile cần xóa.");return;}
  if(!ConfirmDeletion(chosen))return;
  IsEnabled=false;
  try{
- Status.Text="Đang kiểm tra các phiên Codex…";
+ Status.Text=AppLanguage.T("Đang kiểm tra các phiên Codex…");
  var rows=await ProfileProcesses.Snapshot();
  var parent=Path.Combine(root,"profiles");
- foreach(var p in chosen){ProfileStorage.Validate(parent,p.Id);if(ProfileProcesses.Owned(rows,DataPath(p)).Count>0)throw new IOException("Profile "+p.Name+" vẫn chạy nền. Chọn Dừng đã chọn, chờ Đã dừng rồi xóa lại.");}
+ foreach(var p in chosen){ProfileStorage.Validate(parent,p.Id);if(ProfileProcesses.Owned(rows,DataPath(p)).Count>0)throw new IOException("Profile "+p.Name+AppLanguage.T(" vẫn chạy nền. Chọn Dừng đã chọn, chờ Đã dừng rồi xóa lại."));}
  var removed=0;
  foreach(var p in chosen){ProfileStorage.Delete(parent,p.Id);items.Remove(p);try{Save();}catch{items.Add(p);throw;}removed++;}
- Status.Text="Đã xóa "+removed+" profile cùng toàn bộ dữ liệu đăng nhập cục bộ.";
- }catch(Exception ex){Status.Text="Không hoàn tất xóa: "+ex.Message;}finally{IsEnabled=true;}
+ Status.Text=AppLanguage.T("Đã xóa ")+removed+AppLanguage.T(" profile cùng toàn bộ dữ liệu đăng nhập cục bộ.");
+ }catch(Exception ex){Status.Text=AppLanguage.T("Không hoàn tất xóa: ")+ex.Message;}finally{IsEnabled=true;}
  }
  void OpenData(object s,RoutedEventArgs e){try{Process.Start(new ProcessStartInfo(root){UseShellExecute=true});}catch(Exception ex){Status.Text=ex.Message;}}
  void PrepareProfile(Profile p){
@@ -101,17 +134,17 @@ public partial class MainWindow : Window {
  } catch { }
  var saved=Path.Combine(root,"app-path.txt");
  if(File.Exists(saved)){var path=File.ReadAllText(saved).Trim();if(File.Exists(path))return path;}
- if(MessageBox.Show("Không tìm được gói Codex cho tài khoản Windows hiện tại. Hãy kiểm tra Codex đã cài và mở được từ Start. Bạn có muốn chọn ChatGPT.exe thủ công không? Không cần thay đổi quyền WindowsApps.","Không tìm thấy Codex",MessageBoxButton.YesNo,MessageBoxImage.Information)!=MessageBoxResult.Yes)return null;
- var picker=new OpenFileDialog{Title="Chọn ChatGPT.exe của Codex",Filter="ChatGPT.exe|ChatGPT.exe",InitialDirectory=Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)};
+ if(!ConfirmAction(AppLanguage.T("Không tìm được gói Codex cho tài khoản Windows hiện tại. Hãy kiểm tra Codex đã cài và mở được từ Start. Bạn có muốn chọn ChatGPT.exe thủ công không? Không cần thay đổi quyền WindowsApps."),AppLanguage.T("Không tìm thấy Codex")))return null;
+ var picker=new OpenFileDialog{Title=AppLanguage.T("Chọn ChatGPT.exe của Codex"),Filter="ChatGPT.exe|ChatGPT.exe",InitialDirectory=Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)};
  if(picker.ShowDialog()==true){File.WriteAllText(saved,picker.FileName);return picker.FileName;}return null;
  }
  async void Launch(object s,RoutedEventArgs e){
- var chosen=Profiles.SelectedItems.Cast<Profile>().ToList();if(chosen.Count==0){Status.Text="Hãy chọn ít nhất một profile.";return;}
- try{IsEnabled=false;Status.Text="Đang tìm Codex…";var exe=await FindApp();if(exe is null){Status.Text="Chưa tìm được Codex. Profile đã tạo vẫn được giữ lại.";return;}foreach(var p in chosen){
+ var chosen=Profiles.SelectedItems.Cast<Profile>().ToList();if(chosen.Count==0){Status.Text=AppLanguage.T("Hãy chọn ít nhất một profile.");return;}
+ try{IsEnabled=false;Status.Text=AppLanguage.T("Đang tìm Codex…");var exe=await FindApp();if(exe is null){Status.Text=AppLanguage.T("Chưa tìm được Codex. Profile đã tạo vẫn được giữ lại.");return;}foreach(var p in chosen){
  var folder=Path.Combine(root,"profiles",p.Id);var home=Path.Combine(folder,"codex-home");var data=Path.Combine(folder,"app-data");Directory.CreateDirectory(home);Directory.CreateDirectory(data);
  var config=Path.Combine(home,"config.toml");if(!File.Exists(config))File.WriteAllText(config,"cli_auth_credentials_store = \"file\"\n");
  var start=new ProcessStartInfo(exe){UseShellExecute=false};start.Environment["CODEX_HOME"]=home;start.Environment["CODEX_ELECTRON_USER_DATA_PATH"]=data;start.ArgumentList.Add("--user-data-dir="+data);Process.Start(start);
- }Status.Text="Đã gửi yêu cầu mở "+chosen.Count+" profile. Kiểm tra email trong từng cửa sổ Codex.";
- }catch(Exception ex){Status.Text="Không mở được Codex: "+ex.Message;}finally{IsEnabled=true;}
+ }Status.Text=AppLanguage.T("Đã gửi yêu cầu mở ")+chosen.Count+AppLanguage.T(" profile. Kiểm tra email trong từng cửa sổ Codex.");
+ }catch(Exception ex){Status.Text=AppLanguage.T("Không mở được Codex: ")+ex.Message;}finally{IsEnabled=true;}
  }
 }

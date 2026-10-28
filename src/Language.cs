@@ -1,0 +1,78 @@
+namespace CodexProfiles;
+public static class AppLanguage {
+    public static string Code { get; set; } = "en";
+    public static readonly Dictionary<string, string> English = new() {
+        ["Không gian làm việc của bạn."] = "Your personal workspace.",
+        ["+ Thêm profile"] = "+ Add profile",
+        ["Profile mới"] = "New profile",
+        ["Tên profile mới"] = "New profile name",
+        ["Nhập tên profile mới"] = "Enter a profile name",
+        ["PROFILE CỦA BẠN"] = "YOUR PROFILES",
+        ["Ctrl + click để chọn nhiều"] = "Ctrl + click to select multiple",
+        ["Chưa có profile"] = "No profiles yet",
+        ["Thêm tên ở phía trên để bắt đầu."] = "Add a name above to get started.",
+        ["Danh sách profile"] = "Profile list",
+        ["Chọn profile để mở Codex. Profile mới cần đăng nhập lần đầu."] = "Select a profile to launch Codex. New profiles need an initial sign-in.",
+        ["Xóa profile"] = "Delete profiles",
+        ["Xóa profile…"] = "Delete profiles…",
+        ["Mở Codex đã chọn"] = "Launch selected",
+        ["Dừng đã chọn"] = "Stop selected",
+        ["Thư mục dữ liệu"] = "Data folder",
+        ["Đang kiểm tra…"] = "Checking…",
+        ["● Đã dừng"] = "● Stopped",
+        ["● Đang chạy · "] = "● Running · ",
+        [" tiến trình"] = " processes",
+        ["● Không kiểm tra được"] = "● Unable to check",
+        ["● Đang dừng…"] = "● Stopping…",
+        ["● Cần kiểm tra lại"] = "● Check required",
+        ["Chọn profile cần dừng."] = "Select at least one profile to stop.",
+        ["Dừng các profile đã chọn? Tác vụ đang chạy có thể bị ngắt. Dữ liệu đăng nhập được giữ nguyên."] = "Stop the selected profiles? Running tasks may be interrupted. Sign-in data will be retained.",
+        ["Dừng profile"] = "Stop profiles",
+        ["Đã dừng các profile đã chọn. Thông tin đăng nhập vẫn được giữ."] = "Selected profiles have stopped. Sign-in data has been retained.",
+        ["Chưa dừng hoàn tất: "] = "Could not finish stopping: ",
+        ["Không đọc được danh sách; dữ liệu cũ được giữ lại. "] = "Unable to read profiles; existing data has been preserved. ",
+        ["Tên profile đã tồn tại."] = "A profile with this name already exists.",
+        ["Đã tạo profile mới. Chọn Mở profile đã chọn để đăng nhập Codex."] = "Profile created. Select Launch selected to sign in to Codex.",
+        ["Xóa profile và dữ liệu"] = "Delete profiles and data",
+        ["Xóa vĩnh viễn "] = "Permanently delete ",
+        [" profile?"] = " profile(s)?",
+        ["Xóa toàn bộ dữ liệu cục bộ của các profile này: đăng nhập, lịch sử và cấu hình. Không thể hoàn tác. Tài khoản và các profile khác không bị xóa."] = "All local data for these profiles will be deleted, including sign-in data, history and settings. This cannot be undone. Your accounts and other profiles will not be deleted.",
+        ["Giữ lại"] = "Keep profiles",
+        ["Xóa vĩnh viễn"] = "Delete permanently",
+        ["Chọn profile cần xóa."] = "Select at least one profile to delete.",
+        ["Đang kiểm tra các phiên Codex…"] = "Checking Codex sessions…",
+        [" vẫn chạy nền. Chọn Dừng đã chọn, chờ Đã dừng rồi xóa lại."] = " is still running in the background. Select Stop selected and wait for Stopped before deleting.",
+        ["Đã xóa "] = "Deleted ",
+        [" profile cùng toàn bộ dữ liệu đăng nhập cục bộ."] = " profile(s), including all local sign-in data.",
+        ["Không hoàn tất xóa: "] = "Could not finish deleting: ",
+        ["Không tìm được gói Codex cho tài khoản Windows hiện tại. Hãy kiểm tra Codex đã cài và mở được từ Start. Bạn có muốn chọn ChatGPT.exe thủ công không? Không cần thay đổi quyền WindowsApps."] = "Codex could not be found for this Windows user. Check that it is installed and opens from Start. Would you like to select ChatGPT.exe manually? Do not change WindowsApps permissions.",
+        ["Không tìm thấy Codex"] = "Codex not found",
+        ["Chọn ChatGPT.exe của Codex"] = "Select Codex's ChatGPT.exe",
+        ["Hãy chọn ít nhất một profile."] = "Select at least one profile.",
+        ["Đang tìm Codex…"] = "Locating Codex…",
+        ["Chưa tìm được Codex. Profile đã tạo vẫn được giữ lại."] = "Codex was not found. Your profiles have been retained.",
+        ["Đã gửi yêu cầu mở "] = "Launch requested for ",
+        [" profile. Kiểm tra email trong từng cửa sổ Codex."] = " profile(s). Check the account in each Codex window.",
+        ["Không mở được Codex: "] = "Could not launch Codex: ",
+        ["Không đọc được tiến trình Windows."] = "Unable to read Windows processes.",
+        ["Kiểm tra tiến trình quá thời gian."] = "Process inspection timed out.",
+        ["Windows không cho kiểm tra tiến trình."] = "Windows did not allow process inspection.",
+        ["Không đọc được trạng thái."] = "Unable to read process status.",
+        ["Không kiểm tra được một tiến trình Codex."] = "A Codex process could not be inspected.",
+        ["Tiến trình đã thay đổi; hãy thử lại."] = "The process has changed; please try again.",
+        ["Một tiến trình của profile chưa dừng hẳn."] = "A profile process has not fully stopped.",
+        ["Profile vẫn còn tiến trình. Hãy thử dừng lại."] = "Profile processes are still running. Try stopping again.",
+        ["ID profile không hợp lệ."] = "Invalid profile ID.",
+        ["Không xóa qua liên kết thư mục."] = "Cannot delete through directory links.",
+        ["Đường dẫn không an toàn."] = "Unsafe profile path.",
+        ["Profile chứa liên kết. Không xóa tự động."] = "The profile contains linked files or folders. Automatic deletion was refused.",
+    };
+    public static string T(string text) {
+        if (Code == "vi") return text;
+        if (English.TryGetValue(text, out var translated)) return translated;
+        foreach (var pair in English.OrderByDescending(p => p.Key.Length))
+            text = text.Replace(pair.Key, pair.Value, StringComparison.Ordinal);
+        return text;
+    }
+}
+

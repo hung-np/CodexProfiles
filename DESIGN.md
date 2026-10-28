@@ -1,13 +1,23 @@
 # Design
-Vietnamese Windows desktop utility for selecting isolated Codex profiles.
-Direction: quiet blue workspace, with a navy masthead and individually outlined profile cards.
-Segoe UI body 14px, names 17px, heading 27px; spacing 8/12/20/30.
-Runtime owner: MainWindow.xaml Window.Resources (Ink #18314B, Accent #245EDD, Danger #A52A39). Shared button and list item templates own hover, selection, keyboard focus, and disabled states.
-Native WPF multi-selection, keyboard navigation and scrollbars are intentional.
-Destructive confirmation is owned by ConfirmDeletion; cancel receives initial focus.
-Deletion removes only validated GUID profile folders, never default Codex data.
-No automatic animation. Minimum window size 740x540.
+Vietnamese WPF profile launcher. Version 0.7 builds on the user's supplied XAML.
+Direction: restrained luxury through ink, pearl, champagne details and generous spacing; no decorative photography or external fonts.
+Runtime token owner: MainWindow.xaml Window.Resources.
+Ink #182831; primary #223E4B; canvas #F1F2F4; muted #5A6972; lines #DDE2E4; champagne focus/selection detail #A58B59.
+Segoe UI for all interface text; headings 26–28, body 14, profile names 17, badges 12.
+User-supplied InitialConverter owns Unicode grapheme initials. Native WPF list selection and scrollbars retained.
+Shared BtnBase owns hover, pressed, focus and disabled states. Semantic primary/soft/warn/danger variants are intentional.
+StatusKind is derived from current status and excluded from persistence; state text remains visible alongside color.
+Stopped=slate, running=green, checking/stopping=amber, unknown=rose. A green badge alone never proves a state.
+No default Add button: Enter must not accidentally create profiles while navigating the list.
+Profile deletion/stop behavior unchanged; cancel-first deletion confirmation retained.
+No ZIP generation. App directory is the packaged deliverable.
 
-Profile cards bind observable State; labels convey running/stopped/unknown without relying on color. Separate Stop action preserves credentials and confirms interrupted work. Polling interval 4 seconds; errors never imply stopped.
+Version 0.8: profile list owns remaining star-sized height. Compact header without measured decorative shapes, one-line creation form, reduced footer and card spacing. Default height 760.
 
-Version 0.6 palette: cloud #F3F5FA, navy #182D46, indigo #4159D1. Status badges: amber running/checking, slate stopped, rose unknown. State is always conveyed through text as well as color.
+Version 0.9: understated premium workspace. Pearl #F3F3F0, deep petrol #17262B, champagne #927440. Fine card outlines, restrained corners, warm selection surface and contained gold header rail. Keep profile list as dominant surface.
+
+Version 0.10 button architecture: shared BtnBase with layered surface/inset highlight/hover/focus ring; PrimaryButton petrol gradient and champagne text; SoftButton outlined; WarnButton champagne; DangerButton rose outline. 44px minimum height, stable layout across states.
+
+Version 1.00 localization: AppLanguage.English owns paired messages; dynamic WPF resources refresh static UI. English is the first-run default; language.txt stores en/vi. Header has a native language ComboBox; status display is translated independently of status classification. Profile names are never translated.
+
+LanguageSelector and LanguageItem own the authored WPF ComboBox surface and popup. Use 44px height, 8px radius, petrol gradient/champagne text, pearl popup and selected checkmark. Native ComboBox selection/keyboard behavior remains.

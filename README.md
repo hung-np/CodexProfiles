@@ -1,6 +1,10 @@
 # Codex Profiles
 
-A small Windows launcher for separate local Codex profiles. The interface is in Vietnamese.
+A small Windows launcher for separate local Codex profiles. The interface supports English and Vietnamese. English is the default on first launch.
+
+## Language and version
+Version **1.00** starts the stable version series. Use the language selector in the top-right corner to switch between **English** and **Tiếng Việt**. The selection is saved in language.txt under the local data folder and restored on the next launch. Profile names and sign-in data are unchanged. Native Windows file-picker controls and operating-system error details may follow the Windows display language.
+The English controls are **Add profile**, **Launch selected**, **Stop selected**, **Data folder**, and **Delete profiles…**. Vietnamese labels in the examples below refer to the same actions.
 
 ## Start
 Install Codex separately. Extract the Windows x64 release ZIP and run CodexProfiles.exe from Windows File Explorer. The packaged app includes .NET; no SDK is needed to use it.

@@ -48,3 +48,11 @@ await ProfileProcesses.Stop(fakePath);
 
 
 
+
+AppLanguage.Code="en";
+if(AppLanguage.T("● Đã dừng")!="● Stopped")throw new Exception("English state translation failed");
+if(AppLanguage.T("● Đang chạy · 3 tiến trình")!="● Running · 3 processes")throw new Exception("Count translation failed");
+AppLanguage.Code="vi";
+if(AppLanguage.T("● Đã dừng")!="● Đã dừng")throw new Exception("Vietnamese state translation failed");
+AppLanguage.Code="en";
+Console.WriteLine("PASS: English/Vietnamese labels and running process counts.");
