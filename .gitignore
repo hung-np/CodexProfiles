@@ -7,3 +7,8 @@ App/
 profiles.json
 app-path.txt
 App-Framework/
+
+App-v*/
+*.zip
+
+App-*/

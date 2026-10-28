@@ -1,294 +1,104 @@
 # Codex Profiles
 
-A small Windows desktop launcher for opening Codex with separate local profiles.
+A small Windows launcher for separate local Codex profiles. The interface is in Vietnamese.
 
-Create a named profile for each account or workspace, select one or more profiles, and launch them from a single window. Sign in through Codex itself; this launcher does not ask for your password or API key.
+## Start
+Install Codex separately. Extract the Windows x64 release ZIP and run CodexProfiles.exe from Windows File Explorer. The packaged app includes .NET; no SDK is needed to use it.
 
-> **Compatibility notice:** Profile separation relies on Codex application behavior and is not an officially guaranteed multi-account feature. The initial build was compiled and its main window opened successfully. Independent account sessions still require manual verification on your installed Codex version.
+1. Enter a unique profile name and click **+ Thêm profile**.
+2. Select a profile, or hold Ctrl to select several.
+3. Click **Mở Codex đã chọn** and sign in through each Codex window.
+4. Check the account shown in each window before working.
 
-## Features
+Profile isolation depends on Codex behavior and is not an officially guaranteed multi-account feature. Verify separate accounts on your installed version.
 
-- Create named profiles with separate local data directories.
-- Select and launch multiple profiles.
-- Save the profile list between sessions.
-- Try to locate the Windows Store Codex installation automatically.
-- Choose the Codex executable manually if automatic discovery fails.
-- Open the launcher's data folder.
-- Remove profiles from the list while retaining their files.
+## Permanently delete a profile
+Close the Codex windows belonging to the profiles you want to delete. Select those profiles and click **Xóa profile…**. Read the confirmation and choose **Xóa vĩnh viễn**.
 
-The current interface is in Vietnamese. This README is in English.
+Deletion removes the selected profile directory, including locally stored sign-in data, conversations and configuration. It cannot be undone. Your account itself, other profiles, default Codex data and external project folders are not deleted. Remote sessions are not revoked and disk sectors are not securely wiped.
 
-## Requirements
+The app refuses deletion if it detects a selected profile in a running Codex command line, cannot inspect running Codex processes, encounters linked directories, or cannot delete a locked file. Close the relevant Codex windows and retry. A file-system failure may leave a partially deleted profile; its entry remains available for retry. Do not launch that profile before completing deletion.
 
-### To use a packaged release
+Profiles removed by older versions may still have orphaned folders. Version 0.4 does not automatically remove orphaned folders because their ownership and use cannot be confirmed from the current list.
 
-- A Windows x64 computer compatible with .NET 10.
-- The Codex desktop app installed separately.
-- Your own accounts, with access to Codex.
-- Internet access when signing in or using online Codex features.
+## Codex discovery
+The launcher queries the current user's OpenAI.Codex package using Windows PowerShell, then checks a previously saved executable path. Manual selection is offered only if discovery fails. Choose the desktop ChatGPT.exe, not the CLI backend. Do not change WindowsApps permissions.
 
-The self-contained package includes the .NET runtime. You do not need Visual Studio, the .NET SDK, Node.js, Python, or Git to run that package.
-
-### To build from source
-
-- Windows.
-- [.NET 10 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/10.0).
-- Internet access to restore required .NET components.
-- Optional: [GitHub Desktop](https://desktop.github.com/download/) to manage the repository.
-
-The initial build used .NET SDK 10.0.403 and targeted Windows x64.
-
-## Quick start
-
-1. Download the Windows x64 ZIP from this repository's **Releases** section, when a release has been published.
-2. Extract the ZIP into a folder you can keep, such as a folder under Documents.
-3. Open the extracted folder in **Windows File Explorer**.
-4. Double-click **CodexProfiles.exe**.
-5. Enter a profile name and click **Thêm profile**.
-6. Select the new profile and click **Mở profile đã chọn**.
-7. Sign in in the Codex window that opens.
-8. Repeat with another profile and verify that each window shows the intended account.
-
-If you received a local project folder instead of a published release, the packaged application is under **App/**.
-
-Opening a file link inside Codex may display a preview. Use File Explorer to run the executable.
-
-## Using profiles
-
-### Create a profile
-
-Enter a unique, non-empty name and click **Thêm profile**. Examples:
-
-- Personal
-- Work
-- Account 3
-
-The name is a display label. Internally, each profile has a generated ID used for its data folder.
-
-### Launch one or several profiles
-
-Click a profile to select it. Hold **Ctrl** while clicking to select multiple profiles, then click **Mở profile đã chọn**.
-
-Use **Alt + Tab** to switch between the Codex windows. The launcher sends launch requests; it does not track window state or confirm successful sign-in.
-
-Before using a newly created profile, check the account shown in Codex. If it opens the existing account unexpectedly, do not sign out of that window until you have established whether the sessions are separate.
-
-### Remove a profile
-
-Select the profile and click **Xóa khỏi danh sách**, then confirm.
-
-This removes the list entry only. Its local files are retained. Creating another profile with the same name generates a new ID and does not reconnect the old directory.
-
-Automatic recovery of removed entries and permanent deletion of profile data are not implemented in the current version.
-
-### Button reference
-
-| Interface label | Meaning |
-| --- | --- |
-| Thêm profile | Add a profile |
-| Mở profile đã chọn | Launch selected profiles |
-| Mở thư mục dữ liệu | Open the local data folder |
-| Xóa khỏi danh sách | Remove selected entries from the list |
-
-## Locating Codex
-
-The launcher first checks a previously saved executable path. If that path is unavailable, it looks for a Windows Store installation matching:
-
-~~~text
-C:\Program Files\WindowsApps\OpenAI.Codex_*\app\ChatGPT.exe
-~~~
-
-If discovery fails, a file picker asks you to select **ChatGPT.exe** from your Codex installation. Selecting a file saves its path for future launches. Canceling the picker cancels the launch.
-
-The expected executable layout can change after a Codex update. Do not select the command-line backend executable in place of the desktop app.
-
-## How profile separation works
-
-For each launch, the application supplies:
-
-| Setting | Purpose |
-| --- | --- |
-| CODEX_HOME | Separate Codex configuration and backend state |
-| CODEX_ELECTRON_USER_DATA_PATH | Separate desktop application state |
-| --user-data-dir | Separate browser-based application state |
-
-A new profile's Codex configuration requests file-based credential storage. Existing configuration files are not overwritten.
-
-These settings apply to the launched process. The launcher does not change global environment variables or copy credentials from your default Codex profile.
-
-Separate profiles are intended to keep application state independent. They are not a security boundary against other programs running as the same Windows user.
-
-## Local data and privacy
-
-The launcher stores its data outside the repository:
-
+## Local data and security
+Data is stored outside the repository:
 ~~~text
 %LOCALAPPDATA%\CodexProfileManager\
-├── profiles.json              Saved profile IDs and names
-├── app-path.txt               Manually selected executable path, if any
-└── profiles\
-    └── <profile-id>\
-        ├── codex-home\        Codex configuration and backend state
-        └── app-data\          Desktop state, caches, and sign-in-related data
+  profiles.json
+  app-path.txt
+  profiles\<generated-id>\
+    codex-home\
+    app-data\
 ~~~
+Open it with **Thư mục dữ liệu**. These folders can contain access tokens, cookies and private history. Never commit or upload them. The launcher requires no password, API key or GitHub token.
 
-Paste the following into File Explorer's address bar to open this location:
+Each launch sets CODEX_HOME, CODEX_ELECTRON_USER_DATA_PATH and --user-data-dir for that process. File-based credential storage is requested for new profiles. This is local separation, not a security boundary from other software running as the same Windows user.
 
-~~~text
-%LOCALAPPDATA%\CodexProfileManager
-~~~
+## Backup and move to another PC
+There is no built-in export, sync or automatic backup.
+Close the launcher and Codex before making a private encrypted backup of the data directory. Do not store it in GitHub.
+On a new PC, install Codex, extract the launcher, recreate profiles and sign in again. Copying tokens or machine-bound state is not a reliable migration method. Back up external projects separately.
 
-Profile folders can contain credentials, conversations, project paths, and other private information. Treat the entire data directory as sensitive.
-
-- Never upload this directory to GitHub.
-- Never share auth.json, cookies, tokens, or raw profile archives.
-- Do not include private data in screenshots or issue reports.
-- Do not rely on a private GitHub repository as a credential vault.
-- Review changes before every commit; .gitignore is not a complete security control.
-
-The launcher itself does not need a GitHub token or an OpenAI API key.
-
-## Backup and moving to another PC
-
-There is no built-in backup, export, import, or cloud sync in this version.
-
-### Back up the current PC
-
-1. Finish active Codex work.
-2. Close all Codex profile windows and the launcher.
-3. Copy the entire CodexProfileManager data directory to a trusted, encrypted backup location.
-4. Keep the backup private.
-
-Copying only the application folder does not back up your profiles.
-
-A local backup may help recover the same environment, but restoring sign-in state is not guaranteed. Some state may depend on the Windows account, machine, or application version.
-
-### Move to a new PC
-
-The recommended approach is:
-
-1. Install Codex on the new PC.
-2. Download and extract the launcher package.
-3. Create the profiles again.
-4. Sign in separately to each profile.
-5. Restore your projects and other files through their own backup process.
-
-Do not assume copying authentication files will transfer a session. The launcher does not install Codex, transfer subscriptions, or back up external project folders.
-
-## Build from source
-
-Run the following commands in **PowerShell**, from the repository root.
-
-Check the SDK:
-
-~~~powershell
-dotnet --list-sdks
-~~~
-
-Run the application during development:
-
+## Build
+Install the [.NET 10 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) on Windows.
+Run PowerShell from the repository root:
 ~~~powershell
 dotnet run --project .\src\CodexProfiles.csproj
-~~~
-
-Create a self-contained Windows x64 release:
-
-~~~powershell
 dotnet publish .\src\CodexProfiles.csproj -c Release -r win-x64 --self-contained true -o .\App -p:PublishSingleFile=true
 ~~~
+Run App\CodexProfiles.exe. ZIP the complete output directory for distribution. Internet is needed for initial package restore.
+Development and release builds share local profile data; back up before testing.
 
-The entry point is:
-
-~~~text
-App\CodexProfiles.exe
-~~~
-
-Distribute the contents of the entire output folder, including any accompanying files.
-
-For a smaller framework-dependent build:
-
+Storage safety tests:
 ~~~powershell
-dotnet publish .\src\CodexProfiles.csproj -c Release --self-contained false -o .\App-Framework
+dotnet run --project .\tests\StorageTests.csproj
 ~~~
 
-That build requires the matching **.NET 10 Desktop Runtime** on the destination machine.
+## Repository and releases
+- src/: WPF application and validated profile-directory deletion.
+- tests/: dependency-free storage safety checks using generated fake data.
+- DESIGN.md: visual and interaction conventions.
+- CHANGELOG.md: consolidated version history.
+- App/: generated application, excluded from Git.
+- .gitignore: excludes builds, archives and local files.
 
-Development and packaged builds currently share the same local data directory. Back up important profile data before testing changes.
-
-## Project layout
-
-~~~text
-CodexProfiles/
-├── README.md
-├── .gitignore
-└── src/
-    ├── CodexProfiles.csproj
-    ├── App.xaml
-    ├── App.xaml.cs
-    ├── MainWindow.xaml
-    └── MainWindow.xaml.cs
-~~~
-
-Generated output folders such as App, App-Framework, bin, and obj are excluded from source control.
-
-## Upload the project to GitHub
-
-1. Open **GitHub Desktop**.
-2. Use **File → Add local repository** and select the CodexProfiles project folder.
-3. If the folder is not a Git repository, use the offered option to create a repository there.
-4. Confirm the repository root contains README.md and src.
-5. Review the changed files. Include source files, documentation, and .gitignore.
-6. Confirm no credentials, profile directories, private data, or release archives are staged.
-7. Create the initial commit.
-8. Click **Publish repository** and choose the desired visibility.
-
-The generated release ZIP is not excluded by the current .gitignore. Keep it out of commits manually, or add an exclusion before committing it accidentally.
-
-### Publish a downloadable release
-
-1. Build and test the self-contained application.
-2. ZIP the contents of App.
-3. Open the repository on GitHub.
-4. Create a release with a version tag, for example v0.1.0.
-5. Attach the ZIP and describe the changes and known limitations.
-6. Publish the release.
-
-Automatic updates, release automation, and code signing are not configured in this version. Choose a license before distributing the source for reuse; this project does not currently include a license file.
+Use GitHub Desktop to add this project directory, review changed files, commit and publish. Never select the LocalAppData data directory as a repository.
+Create a GitHub Release and attach a ZIP of App. No GitHub CLI is required.
+No license or signing certificate is included; select a license before allowing public reuse.
+Automatic updates are not implemented.
 
 ## Troubleshooting
-
-| Problem | What to do |
+| Issue | Action |
 | --- | --- |
-| A file opens as text or a preview | Open the folder in Windows File Explorer and run CodexProfiles.exe there. |
-| No Codex window opens | Select at least one profile and read the status message. Check the selected executable. |
-| The executable picker appears | Automatic discovery failed. Select the desktop app's ChatGPT.exe. |
-| Codex stopped opening after an update | Verify its new installation path. If a stale saved path still exists, close the launcher and rename app-path.txt so discovery runs again. |
-| Two profiles show the same account | Stop account changes and verify isolation. Compatibility may have changed; do not repeatedly sign out of a potentially shared session. |
-| A deleted profile's files still exist | This is intentional. Removing an entry retains its data directory. |
-| The launcher reports that it cannot read the profile list | Close it, back up the data directory, and inspect or restore profiles.json. It disables the window to avoid overwriting unreadable data. |
-| Build fails during restore | Check access to api.nuget.org, your network, and proxy settings. |
-| Windows displays an unrecognized-app warning | Verify the source of the package. Builds are not currently code-signed; do not disable Windows protection globally. |
+| File opens as a preview | Run the EXE from Windows File Explorer. |
+| Cannot find Codex | Confirm it opens from Start under the same Windows user. Check the installed desktop executable if prompted. |
+| Same account appears in two profiles | Stop account changes and verify profile isolation before signing out. |
+| Delete is blocked | Close selected Codex sessions. Do not force-delete live profiles. |
+| Profile list is unreadable | Back up the data folder and restore a valid profiles.json; the app disables edits to avoid overwriting it. |
+| Restore/build fails | Check access to api.nuget.org and your proxy. |
+| Windows warns about the EXE | Verify the release source. Do not disable Windows protection globally; builds are unsigned. |
 
-If you need to start a fresh profile list, close the launcher, back up the data directory, and rename profiles.json. This does not reconnect existing profile folders automatically.
+## Verification
+Release build and storage safety tests have been run. Full account isolation, live-session deletion checks, keyboard/accessibility behavior and operation on another PC require end-to-end verification.
+See CHANGELOG.md for version history.
 
-## Verification status
+Independent project; not affiliated with or endorsed by OpenAI.
 
-Completed for the initial build:
+## Stop profiles and check status (v0.5)
+Select profiles and click **Dừng đã chọn**. Confirm that running work may be interrupted. Stopping terminates only the matched profile processes and their identified descendants; it retains sign-in data. It does not delete the profile.
+Each card refreshes approximately every four seconds:
+- **Đang chạy**: matched profile processes were detected.
+- **Đã dừng**: no matching process was detected in the latest successful scan.
+- **Không kiểm tra được**: Windows process inspection failed; the app cannot confirm the profile stopped.
+Wait for **Đã dừng** before using the separate Delete button. Default Codex sessions are excluded by exact profile data-directory matching.
+A process scan is a snapshot; a profile opened externally can change state between refreshes.
+Integration test (creates and stops only a fake test process):
+~~~powershell
+dotnet run --project .\tests\StorageTests.csproj -- --process-integration
+~~~
 
-- Release compilation and self-contained Windows x64 publishing.
-- Application process started and displayed a window titled Codex Profiles.
-
-Still requires manual testing:
-
-- Profile persistence across restarts.
-- Independent account sessions in two Codex windows.
-- Multiple-profile launch and repeated launches of the same profile.
-- Error handling, file selection, and removal behavior.
-- Operation after Codex updates.
-- Execution on another Windows PC.
-
-## Scope and limitations
-
-This application is a local profile launcher. It does not implement an account switcher inside Codex, rename profiles, monitor running profiles, manage account usage, or synchronize data between computers.
-
-It is an independent project and is not affiliated with or endorsed by OpenAI.
+Version 0.6 distribution: the current build is provided in App/. No release ZIP is generated automatically; archive the folder yourself if needed.
