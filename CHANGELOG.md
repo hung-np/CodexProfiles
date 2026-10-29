@@ -1,5 +1,43 @@
 # Changelog
 
+## Unreleased
+- Synchronized README and DESIGN with v1.01, current colors, bilingual controls, local data layout and App delivery.
+- Ordered version history from newest to oldest.
+- Removed duplicate Unknown-state badge triggers without changing appearance or behavior.
+
+## 1.01 — 2026-10-29
+- Restyled language selector and dropdown to match primary controls: petrol surface, champagne border and chevron, inset highlight, selected checkmark and keyboard focus ring.
+
+## 1.00 — 2026-10-29
+- Started the 1.00 stable version series; binary assembly version 1.0.0.0.
+- Added English/Vietnamese language selection, English by default, saved per Windows user.
+- Localized controls, statuses, confirmation dialogs, accessible labels and application errors.
+- Added translation tests and preserved existing profile data.
+
+## 0.10 — 2026-10-29
+- Rebuilt button surfaces with layered borders, inset highlights, subtle depth and visible keyboard rings.
+- Distinct primary launch, outlined add/folder, champagne stop and restrained danger actions.
+- Added pressed/hover/disabled treatments without shifting layout.
+
+## 0.9 — 2026-10-29
+- Refined pearl/petrol/champagne visual system, fine selection outlines and profile avatars.
+- Retained compact header and profile-first layout. No functional changes.
+
+## 0.8 — 2026-10-29
+- Prioritized profile list height, compacted header and inline creation form.
+- Removed decorative header shapes that could inflate layout measurements.
+- Reduced footer spacing and card padding; increased default window height.
+
+## 0.7 — 2026-10-29
+- Integrated user-supplied XAML and Unicode initial avatars.
+- Refined ink/pearl/champagne palette, profile selection and shared controls.
+- Added derived status categories for badge styling; removed global default Add action.
+
+## 0.6 — 2026-10-29
+- Refined cloud/navy/indigo palette and profile state badges.
+- Updated header copy and hover treatment.
+- Distribution uses the App directory; no ZIP is generated.
+
 ## 0.5 — 2026-10-29
 - Added a separate Stop selected button; stopping retains all profile data and credentials.
 - Added per-profile process states, refreshed approximately every four seconds.
@@ -28,37 +66,3 @@
 ## 0.1
 - Initial WPF launcher, persisted profile list and multi-profile launching.
 - Initial behavior retained data when removing list entries; replaced by permanent deletion in 0.4.
-
-
-## 0.6 — 2026-10-29
-- Refined cloud/navy/indigo palette and profile state badges.
-- Updated header copy and hover treatment.
-- Distribution uses the App directory; no ZIP is generated.
-
-## 0.7 — 2026-10-29
-- Integrated user-supplied XAML and Unicode initial avatars.
-- Refined ink/pearl/champagne palette, profile selection and shared controls.
-- Added derived status categories for badge styling; removed global default Add action.
-
-## 0.8 — 2026-10-29
-- Prioritized profile list height, compacted header and inline creation form.
-- Removed decorative header shapes that could inflate layout measurements.
-- Reduced footer spacing and card padding; increased default window height.
-
-## 0.9 — 2026-10-29
-- Refined pearl/petrol/champagne visual system, fine selection outlines and profile avatars.
-- Retained compact header and profile-first layout. No functional changes.
-
-## 0.10 — 2026-10-29
-- Rebuilt button surfaces with layered borders, inset highlights, subtle depth and visible keyboard rings.
-- Distinct primary launch, outlined add/folder, champagne stop and restrained danger actions.
-- Added pressed/hover/disabled treatments without shifting layout.
-
-## 1.00 — 2026-10-29
-- Started the 1.00 stable version series; binary assembly version 1.0.0.0.
-- Added English/Vietnamese language selection, English by default, saved per Windows user.
-- Localized controls, statuses, confirmation dialogs, accessible labels and application errors.
-- Added translation tests and preserved existing profile data.
-
-## 1.01 — 2026-10-29
-- Restyled language selector and dropdown to match primary controls: petrol surface, champagne border and chevron, inset highlight, selected checkmark and keyboard focus ring.

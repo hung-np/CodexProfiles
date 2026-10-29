@@ -226,9 +226,6 @@
                 <DataTrigger Binding="{Binding StatusKind}" Value="Unknown">
                     <Setter Property="Background" Value="#FBE8EA"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding StatusKind}" Value="Unknown">
-                    <Setter Property="Background" Value="#FBE8EA"/>
-                </DataTrigger>
             </Style.Triggers>
         </Style>
         <Style x:Key="BadgeText" TargetType="TextBlock">
@@ -244,9 +241,6 @@
                 </DataTrigger>
                 <DataTrigger Binding="{Binding StatusKind}" Value="Stopping">
                     <Setter Property="Foreground" Value="#825100"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding StatusKind}" Value="Unknown">
-                    <Setter Property="Foreground" Value="#A52A39"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding StatusKind}" Value="Unknown">
                     <Setter Property="Foreground" Value="#A52A39"/>

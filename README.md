@@ -3,27 +3,27 @@
 A small Windows launcher for separate local Codex profiles. The interface supports English and Vietnamese. English is the default on first launch.
 
 ## Language and version
-Version **1.00** starts the stable version series. Use the language selector in the top-right corner to switch between **English** and **Tiếng Việt**. The selection is saved in language.txt under the local data folder and restored on the next launch. Profile names and sign-in data are unchanged. Native Windows file-picker controls and operating-system error details may follow the Windows display language.
+Current version: **1.01** (C# + WPF, .NET 10). Version 1.00 started the stable version series. Use the language selector in the top-right corner to switch between **English** and **Tiếng Việt**. The selection is saved in language.txt under the local data folder and restored on the next launch. Profile names and sign-in data are unchanged. Native Windows file-picker controls and operating-system error details may follow the Windows display language.
 The English controls are **Add profile**, **Launch selected**, **Stop selected**, **Data folder**, and **Delete profiles…**. Vietnamese labels in the examples below refer to the same actions.
 
 ## Start
-Install Codex separately. Extract the Windows x64 release ZIP and run CodexProfiles.exe from Windows File Explorer. The packaged app includes .NET; no SDK is needed to use it.
+Install Codex separately. Open the packaged Windows x64 App folder and run CodexProfiles.exe from Windows File Explorer. The packaged app includes .NET; no SDK is needed to use it.
 
-1. Enter a unique profile name and click **+ Thêm profile**.
+1. Enter a unique profile name and click **+ Add profile** (**+ Thêm profile**).
 2. Select a profile, or hold Ctrl to select several.
-3. Click **Mở Codex đã chọn** and sign in through each Codex window.
+3. Click **Launch selected** (**Mở Codex đã chọn**) and sign in through each Codex window.
 4. Check the account shown in each window before working.
 
 Profile isolation depends on Codex behavior and is not an officially guaranteed multi-account feature. Verify separate accounts on your installed version.
 
 ## Permanently delete a profile
-Close the Codex windows belonging to the profiles you want to delete. Select those profiles and click **Xóa profile…**. Read the confirmation and choose **Xóa vĩnh viễn**.
+Close the Codex windows belonging to the profiles you want to delete. Select those profiles and click **Delete profiles…** (**Xóa profile…**). Read the confirmation and choose **Delete permanently** (**Xóa vĩnh viễn**).
 
 Deletion removes the selected profile directory, including locally stored sign-in data, conversations and configuration. It cannot be undone. Your account itself, other profiles, default Codex data and external project folders are not deleted. Remote sessions are not revoked and disk sectors are not securely wiped.
 
 The app refuses deletion if it detects a selected profile in a running Codex command line, cannot inspect running Codex processes, encounters linked directories, or cannot delete a locked file. Close the relevant Codex windows and retry. A file-system failure may leave a partially deleted profile; its entry remains available for retry. Do not launch that profile before completing deletion.
 
-Profiles removed by older versions may still have orphaned folders. Version 0.4 does not automatically remove orphaned folders because their ownership and use cannot be confirmed from the current list.
+Profiles removed by older versions may still have orphaned folders. The current version does not automatically remove orphaned folders because their ownership and use cannot be confirmed from the current list.
 
 ## Codex discovery
 The launcher queries the current user's OpenAI.Codex package using Windows PowerShell, then checks a previously saved executable path. Manual selection is offered only if discovery fails. Choose the desktop ChatGPT.exe, not the CLI backend. Do not change WindowsApps permissions.
@@ -34,11 +34,12 @@ Data is stored outside the repository:
 %LOCALAPPDATA%\CodexProfileManager\
   profiles.json
   app-path.txt
-  profiles\<generated-id>\
+  language.txt
+  profiles\<profile-id>\
     codex-home\
     app-data\
 ~~~
-Open it with **Thư mục dữ liệu**. These folders can contain access tokens, cookies and private history. Never commit or upload them. The launcher requires no password, API key or GitHub token.
+Profile IDs are generated GUIDs in N format (32 hexadecimal characters). Open it with **Data folder** (**Thư mục dữ liệu**). These folders can contain access tokens, cookies and private history. Never commit or upload them. The launcher requires no password, API key or GitHub token.
 
 Each launch sets CODEX_HOME, CODEX_ELECTRON_USER_DATA_PATH and --user-data-dir for that process. File-based credential storage is requested for new profiles. This is local separation, not a security boundary from other software running as the same Windows user.
 
@@ -98,7 +99,7 @@ Go up one folder, open App, then double-click CodexProfiles.exe.
 - After pulling source updates, close Codex Profiles and run the publish command again to update App. Closing the launcher does not stop your Codex profile sessions.
 - If dotnet is not recognized, reopen PowerShell and check that the SDK was installed.
 - If the project file cannot be found, use the command matching your current folder: repository root or src.
-- Close the launcher before publishing over its files if the build reports that output files are in use.
+- Close the launcher before publishing over its files. Do not close users' Codex sessions to update the launcher.
 - No ZIP is created by these commands. You can archive App yourself when needed.
 
 ## Build
@@ -108,7 +109,7 @@ Run PowerShell from the repository root:
 dotnet run --project .\src\CodexProfiles.csproj
 dotnet publish .\src\CodexProfiles.csproj -c Release -r win-x64 --self-contained true -o .\App -p:PublishSingleFile=true
 ~~~
-Run App\CodexProfiles.exe. ZIP the complete output directory for distribution. Internet is needed for initial package restore.
+Run App\CodexProfiles.exe. App is the single current packaged output folder; no ZIP is generated. Internet is needed for initial package restore.
 Development and release builds share local profile data; back up before testing.
 
 Storage safety tests:
@@ -125,7 +126,7 @@ dotnet run --project .\tests\StorageTests.csproj
 - .gitignore: excludes builds, archives and local files.
 
 Use GitHub Desktop to add this project directory, review changed files, commit and publish. Never select the LocalAppData data directory as a repository.
-Create a GitHub Release and attach a ZIP of App. No GitHub CLI is required.
+Commit, push and publish releases only when explicitly requested. Keep App, bin, obj, archives and personal data out of Git.
 No license or signing certificate is included; select a license before allowing public reuse.
 Automatic updates are not implemented.
 
@@ -146,8 +147,8 @@ See CHANGELOG.md for version history.
 
 Independent project; not affiliated with or endorsed by OpenAI.
 
-## Stop profiles and check status (v0.5)
-Select profiles and click **Dừng đã chọn**. Confirm that running work may be interrupted. Stopping terminates only the matched profile processes and their identified descendants; it retains sign-in data. It does not delete the profile.
+## Stop profiles and check status
+Select profiles and click **Stop selected** (**Dừng đã chọn**). Confirm that running work may be interrupted. Stopping terminates only the matched profile processes and their identified descendants; it retains sign-in data. It does not delete the profile.
 Each card refreshes approximately every four seconds:
 - **Đang chạy**: matched profile processes were detected.
 - **Đã dừng**: no matching process was detected in the latest successful scan.
@@ -159,4 +160,4 @@ Integration test (creates and stops only a fake test process):
 dotnet run --project .\tests\StorageTests.csproj -- --process-integration
 ~~~
 
-Version 0.6 distribution: the current build is provided in App/. No release ZIP is generated automatically; archive the folder yourself if needed.
+Current distribution: the current build is provided in App/. No release ZIP is generated automatically; archive the folder yourself if needed.
